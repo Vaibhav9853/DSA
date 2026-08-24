@@ -1,37 +1,78 @@
+class Node{
+public:
+    int k;
+    int val;
+    Node* left;
+    Node* right;
+
+    Node(int key, int value){
+        this->k = key;
+        this->val = value;
+        this->left = NULL;
+        this->right = NULL;
+    }
+};
+
 class LRUCache {
-    vector<pair<int,int>> cache;
+private:
+    unordered_map<int, Node*> mp;
+    Node* head = new Node(-1,-1);
+    Node* end = new Node(-1,-1); 
     int c;
+
+    void remove(Node* temp){
+        temp->left->right = temp->right;
+        temp->right->left = temp->left;
+    }
+
+    void insertAtEnd(Node* node){
+        node->right = end;
+        node->left = end->left;
+
+        end->left->right = node;
+        end->left = node;
+    }
+
 public:
     LRUCache(int capacity) {
         c = capacity;
+        head->right = end;
+        end->left = head;
     }
     
     int get(int key) {
-        for(int i=0;i<cache.size();i++){
-            if(cache[i].first == key){
-                pair<int,int> temp = cache[i];
-                cache.erase(cache.begin()+i);
-                cache.push_back(temp);
-                return temp.second;
-            }
+        if(mp.find(key) == mp.end()){
+            return -1;
         }
-        return -1;
+        
+        Node* temp = mp[key];
+        remove(temp);
+        insertAtEnd(temp);
+
+        return temp->val;
     }
     
     void put(int key, int value) {
-        for(int i=0;i<cache.size();i++){
-            if(cache[i].first == key){
-                cache.erase(cache.begin()+i);
-                cache.push_back({key, value});
-                return;
+        if(mp.find(key) == mp.end()){
+            Node* node = new Node(key, value);
+            mp[key] = node;
+
+            insertAtEnd(node);
+
+            if (mp.size() > c) {
+                Node* lru = head->right;
+
+                remove(lru);
+                mp.erase(lru->k);
+
+                delete lru;
             }
         }
-        if(cache.size() == c){
-            cache.erase(cache.begin());
-            cache.push_back({key, value});
-        }
         else{
-            cache.push_back({key, value});
+            Node* temp = mp[key];
+            temp->val = value;
+            remove(temp);
+            insertAtEnd(temp);
         }
     }
 };
