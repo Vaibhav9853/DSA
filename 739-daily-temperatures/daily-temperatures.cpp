@@ -4,9 +4,8 @@ public:
         int n = temp.size();
         stack<int> st;
         vector<int> ans(n,0);
-        st.push(n-1);
 
-        for(int i=n-2;i>=0;i--){
+        for(int i=n-1;i>=0;i--){
             while(!st.empty() && temp[st.top()] <= temp[i]){
                 st.pop();
             }
