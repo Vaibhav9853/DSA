@@ -8,23 +8,23 @@ public:
 
         for(auto it:initialBoxes){
             curr[it] = 1;
-            if(status[it]) q.push(it);
+            if(status[it]){
+                vis[it] = 1;
+                q.push(it);
+            }
         }
 
         int ans = 0;
         while(!q.empty()){
             int x = q.front();
             q.pop();
-
-            if(vis[x]) continue;
-            
-            vis[x] = 1;
             ans += candies[x];
 
             for(auto it: keys[x]){
                 status[it] = 1;
 
                 if(curr[it] && !vis[it]){
+                    vis[it] = 1;
                     q.push(it);
                 }
             }
@@ -33,6 +33,7 @@ public:
                 curr[it] = 1;
 
                 if(status[it] && !vis[it]){
+                    vis[it] = 1;
                     q.push(it);
                 }
             }
